@@ -1,0 +1,60 @@
+version: '3.3'
+services: 
+
+  nodeTestApp:
+    build:
+      # name: nodejs
+      context: C:/th135e/Learning/Dockers/NodejsApp/nodeTestApp/
+      dockerfile: C:/th135e/Learning/Dockers/NodejsApp/nodeTestApp/node.dockerfile
+    image: node-test-app:1.0
+    ports: 
+     - 3000:3000
+    networks: 
+      - mongonet
+ #-----------------------------------------------#   
+  mongodb:
+    image: mongo:latest
+    # name: mongodb
+    restart: always
+    # entrypoint: 'mongo --wiredTigerCacheSizeGB 1.5'
+    ports: 
+      - 27017:27017
+    environment: 
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    networks: 
+      - mongonet
+    volumes: 
+      -  mongodb-data:/data/db
+ #-----------------------------------------------#   
+  mongo-express:
+    image: mongo-express:latest
+    restart: always
+    depends_on:
+      - mongodb
+    ports: 
+      - 8082:8081
+    environment: 
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: admin
+      ME_CONFIG_BASICAUTH_USERNAME: guest
+      ME_CONFIG_BASICAUTH_PASSWORD:  guest
+      ME_CONFIG_MONGODB_SERVER: mongodb
+    networks: 
+      - mongonet
+
+ #-----------------------------------------------#     
+networks: 
+  mongonet:
+    driver: bridge
+#--------------------------------------------------#
+volumes: 
+  mongodb-data:
+    # name: mongo-dbdata
+    external: 
+      name: mongodb-data
+
+    # driver_opts: 
+    #   type: none
+    #   o: bind
+    #   device: C:/th135e/Learning/Dockers/mongo-data

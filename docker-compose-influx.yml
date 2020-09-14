@@ -1,0 +1,46 @@
+version: '3.7'
+services: 
+
+  influxdb:
+    # name: influxdb 
+    image: influxdb:latest
+    ports: 
+    - 8086:8086
+    volumes: 
+    - C:/th135e/Learning/InfluxDB/dbdata/influxdb.conf:/etc/influxdb/influxdb.conf:ro
+    - C:/th135e/Learning/InfluxDB/dbdata/data:/var/lib/influxdb 
+    networks: 
+      - influxdb
+
+ #-----------------------------------------------#   
+  chronograf:
+    image: chronograf:latest
+    # name: mongodb
+    entrypoint: 'chronograf --influxdb-url=http://influxdb:8086'
+    ports: 
+      - 8888:8888
+    networks: 
+      - influxdb
+    volumes: 
+      -  C:/th135e/Learning/InfluxDB/dbdata/chronograf:/var/lib/chronograf 
+ #-----------------------------------------------#   
+  telegraf:
+    image: telegraf:latest
+    volumes: 
+      - C:/th135e/Learning/InfluxDB/dbdata/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+    networks: 
+      - influxdb
+
+ #-----------------------------------------------#     
+networks: 
+  influxdb:
+    driver: bridge
+#--------------------------------------------------#
+# volumes: 
+  # mongo-dbdata:
+  # #  name: mongo-dbdata
+  #  driver: local
+  #  driver_opts: 
+  #   type: none
+  #   o: bind
+  #   device: $PWD/mongo-data
